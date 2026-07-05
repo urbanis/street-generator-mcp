@@ -1,8 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { StreetConfigSchema, RenderStyleSchema } from "./schema.js";
+import { StreetConfigSchema, RenderStyleSchema, importStreetInputShape } from "./schema.js";
 import { renderStreetHandler } from "./tools/renderStreet.js";
 import { buildShareUrlHandler } from "./tools/buildShareUrl.js";
+import { importStreetHandler, type ImportStreetArgs } from "./tools/importStreet.js";
 import type { StreetConfig } from "./core/types.js";
 import type { RenderStyle } from "./core/renderSvg.js";
 
@@ -30,6 +31,21 @@ server.registerTool(
     inputSchema: { config: StreetConfigSchema },
   },
   async (args) => buildShareUrlHandler(args as { config: StreetConfig }),
+);
+
+server.registerTool(
+  "import_street_from_osm",
+  {
+    title: "Import a real street from an address",
+    description:
+      "Render a real street cross-section by reading its layout from OpenStreetMap. " +
+      "Requires a COMPLETE address: street, house number, city, postcode, and country. " +
+      "If the user hasn't provided all of these, or the address is unclear, ASK them for the " +
+      "missing parts before calling. If several places match, the tool returns lettered candidates " +
+      "(A, B, C…); show them to the user, then call again with the chosen candidate's lat and lng.",
+    inputSchema: importStreetInputShape,
+  },
+  async (args) => importStreetHandler(args as ImportStreetArgs),
 );
 
 await server.connect(new StdioServerTransport());

@@ -52,3 +52,19 @@ export const RenderStyleSchema = z
     showFigures: z.boolean().default(true),
   })
   .partial();
+
+// Raw input shape for the OSM import tool. The address fields are required, so
+// Claude must ask the user for any missing piece before calling.
+export const importStreetInputShape = {
+  street: z.string().describe("Street name (required)"),
+  houseNumber: z.string().describe("House number (required)"),
+  city: z.string().describe("City (required)"),
+  postcode: z.string().describe("Postal / ZIP code (required)"),
+  country: z.string().describe("Country name or code (required)"),
+  lat: z
+    .number()
+    .optional()
+    .describe("Latitude — provide ONLY when re-rendering a disambiguation candidate the user picked; skips geocoding"),
+  lng: z.number().optional().describe("Longitude — provide together with lat"),
+  style: RenderStyleSchema.optional(),
+};
