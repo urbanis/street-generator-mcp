@@ -2,6 +2,7 @@ import { geocodeAddress, type AddressFields } from "../core/osm/geocode.js";
 import { fetchOsmStreetAt } from "../core/osm/fetch.js";
 import { osmTagsToStreetConfig } from "../core/osm/mapper.js";
 import { renderStreetSvg, type RenderStyle } from "../core/renderSvg.js";
+import { buildShareUrl } from "../core/shareUrl.js";
 
 export interface ImportStreetArgs extends AddressFields {
   lat?: number;
@@ -51,12 +52,14 @@ export async function importStreetHandler(args: ImportStreetArgs) {
 
   const config = osmTagsToStreetConfig(tags);
   const svg = renderStreetSvg(config, args.style);
-  const header = matchedLabel ? `Matched: ${config.name} — ${matchedLabel}` : `Matched: ${config.name}`;
+  const url = buildShareUrl(config);
+  const header = matchedLabel ? `Matched: ${config.name} (${matchedLabel})` : `Matched: ${config.name}`;
 
   return {
     content: [
       { type: "text" as const, text: header },
       { type: "text" as const, text: svg },
+      { type: "text" as const, text: `Open in Street Generator: ${url}` },
     ],
   };
 }
