@@ -13,7 +13,21 @@ describe("buildShareUrl", () => {
 
   it("round-trips: decoding s yields the original config", () => {
     const url = new URL(buildShareUrl(cfg));
-    const decoded = JSON.parse(Buffer.from(url.searchParams.get("s")!, "base64").toString());
+    // atob() reads one byte per char, so decode as latin1 to mimic the browser.
+    const decoded = JSON.parse(Buffer.from(url.searchParams.get("s")!, "base64").toString("latin1"));
     expect(decoded.name).toBe("Test");
+  });
+
+  it("preserves middle-dots and umlauts (no mojibake)", () => {
+    const special: StreetConfig = {
+      id: "s",
+      name: "Große Straße",
+      subtitle: "Wide sidewalks · street trees · protected bike lanes",
+      elements: [],
+    };
+    const url = new URL(buildShareUrl(special));
+    const decoded = JSON.parse(Buffer.from(url.searchParams.get("s")!, "base64").toString("latin1"));
+    expect(decoded.subtitle).toBe("Wide sidewalks · street trees · protected bike lanes");
+    expect(decoded.name).toBe("Große Straße");
   });
 });
