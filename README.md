@@ -60,6 +60,36 @@ Every render returns the **cross-section as SVG** (which you can save) together 
 SVG, and JSON exports are available. Native PNG output from the server is on the roadmap (see
 Future work).
 
+## Examples
+
+From simple to more complex. You type these to Claude; it calls the tools and shows the result.
+
+| Prompt | What you get |
+|---|---|
+| "Render a two-lane street with sidewalks on both sides." | A simple SVG cross-section (two traffic lanes, two sidewalks) and a share link. |
+| "Design a calm residential street with wide sidewalks, street trees, and a protected bike lane on each side." | A fuller illustrated SVG with pedestrians, trees, and buffered cycle lanes, plus a share link. |
+| "Draw a boulevard with a central median, bus lanes, and buildings, in colour." | A wide coloured cross-section with a median, bus lanes, and building floor stacks. |
+| "Design a one-way street with parking, and hide the width numbers." | An SVG with labels but no measurements (a style option), plus a share link. |
+| "Show me the street at Unter den Linden 77, 10117 Berlin, Germany." | The real street read from OpenStreetMap and rendered, plus a share link. |
+| "Load the street at Hauptstrasse 1, Germany." (ambiguous address) | A lettered list of candidate places (A, B, C) to choose from; pick one and it renders. |
+
+## Usage and external services
+
+`import_street_from_osm` queries two free OpenStreetMap services: **Nominatim** (geocoding) and
+**Overpass** (map data). It is meant for occasional, interactive lookups, not bulk downloading.
+Please stay within their public usage policies:
+
+- **Nominatim:** at most 1 request per second, an identifying `User-Agent` (already set by this
+  server), results cached where possible, and no automated or bulk querying. See the
+  [Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/).
+- **Overpass:** fair use only, roughly up to 10,000 requests and 1 GB of data per day per IP,
+  with rate limiting under load and a 180 second per-request timeout. See the
+  [Overpass usage guidance](https://dev.overpass-api.de/overpass-doc/en/preface/commons.html).
+
+For heavy or automated use, run your own Nominatim or Overpass instance instead of the public
+servers. Map data is copyright OpenStreetMap contributors, available under the ODbL; displayed
+results should attribute OpenStreetMap accordingly.
+
 ## Install (Claude Desktop)
 
 ```json
