@@ -55,15 +55,16 @@ export function renderStreetSvg(street: StreetConfig, style: RenderStyle = {}): 
       );
     }
 
+    // Annotation zone below the ground band: measurements first, then labels.
     if (s.showMeasurements) {
       parts.push(
-        `<text x="${cx}" y="${groundY - 6}" text-anchor="middle" font-size="11" fill="#374151">${el.width_m.toFixed(2)}</text>`,
+        `<text x="${cx}" y="${bandTop + BAND_H + 16}" text-anchor="middle" font-size="11" fill="#374151">${el.width_m.toFixed(2)}</text>`,
       );
     }
     if (s.showLabels) {
       const label = el.label ?? def.label;
       parts.push(
-        `<text x="${cx}" y="${bandTop + BAND_H + 16}" text-anchor="middle" font-size="11" fill="#374151">${esc(label)}</text>`,
+        `<text x="${cx}" y="${bandTop + BAND_H + 32}" text-anchor="middle" font-size="11" fill="#374151">${esc(label)}</text>`,
       );
     }
     if (s.showFigures && el.figure?.show) {
