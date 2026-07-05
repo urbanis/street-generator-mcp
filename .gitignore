@@ -4,3 +4,4 @@ dist
 sample.svg
 osm-sample.svg
 docs/
+.claude/
