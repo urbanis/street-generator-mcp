@@ -1,34 +1,32 @@
 # street-generator-mcp
 
 An [MCP](https://modelcontextprotocol.io) server that lets Claude design and render
-**urban street cross-sections** from natural language — in the visual style of the
-[Street Generator](https://streetgenerator.com) app, figures and all.
+**urban street cross-sections** from natural language, in the visual style of the
+[Street Generator](https://streetgenerator.com) app, figures and all. It can also read a
+**real street from an address** via OpenStreetMap.
 
-Describe a street; Claude produces the structured design; this server renders it to a
-self-contained SVG and can hand back a link to open it in the live app.
-
----
+![Example street cross-section](examples/residential-street.svg)
 
 ## The idea
 
-> **Claude does the open-ended reasoning (designing the street). The server does the
-> deterministic work (drawing it).**
+> Claude does the open-ended reasoning (designing the street). The server does the
+> deterministic work (drawing it).
 
-The server contains **no LLM, no API keys, no secrets**. It minimises what the model has to
-produce — a small structured `StreetConfig` instead of thousands of tokens of hand-drawn
-SVG — and moves the heavy, exact rendering into code. That makes it **faster, cheaper, and
-reliable**: every street is drawn by the same renderer, identical every time.
+The server holds no LLM, no API keys, and no secrets. It keeps the model's output small (a
+compact `StreetConfig` instead of thousands of tokens of hand-drawn SVG) and moves the heavy,
+exact rendering into code. The result is faster, cheaper, and reliable: every street is drawn
+by the same renderer, identical every time.
 
 ```
 User: "a calm residential street, wide sidewalks, trees, protected bike lanes"
-   │
-   ▼
-Claude → StreetConfig (JSON), guided by the tool's schema
-   │
-   ├─ render_street(config, style)   → server draws an illustrated SVG
-   └─ build_share_url(config)        → streetgenerator.com/?s=…
-   │
-   ▼
+   |
+   v
+Claude -> StreetConfig (JSON), guided by the tool schema
+   |
+   |-- render_street(config, style)   -> server draws an illustrated SVG
+   |-- build_share_url(config)        -> streetgenerator.com/?s=...
+   |
+   v
 Claude shows the image and the link
 ```
 
@@ -38,11 +36,29 @@ Claude shows the image and the link
 Renders a `StreetConfig` to an illustrated SVG cross-section (buildings as floor stacks,
 sidewalks with pedestrians, planting strips with trees, lanes with cars).
 
-`style` (optional): `colorMode` `"outline"` (default) | `"color"`, and `showLabels`,
+`style` (optional): `colorMode` `"outline"` (default) or `"color"`, plus `showLabels`,
 `showMeasurements`, `showFigures` (all default `true`).
 
+### `import_street_from_osm(street, houseNumber, city, postcode, country, style?)`
+Reads a real street from OpenStreetMap and renders it. Give a full address (street, house
+number, city, postcode, country). If any part is missing or unclear, Claude asks first. When
+several places match, the tool returns lettered candidates (A, B, C) so you can pick one, then
+it renders the chosen street.
+
+Under the hood: geocode the address (Nominatim), read the nearest street's tags (Overpass),
+interpret and map them to a `StreetConfig`, then render. This tool needs internet access; the
+other two do not.
+
 ### `build_share_url(config)`
-Returns a `streetgenerator.com` link that opens the design in the live app.
+Returns a `streetgenerator.com` link that opens the design in the live app, where you can keep
+editing and export it.
+
+## What you get back
+
+Every render returns the **cross-section as SVG** (which you can save) together with a
+**streetgenerator.com link** that opens the same design in the app, where the app's own PNG,
+SVG, and JSON exports are available. Native PNG output from the server is on the roadmap (see
+Future work).
 
 ## Install (Claude Desktop)
 
@@ -50,33 +66,33 @@ Returns a `streetgenerator.com` link that opens the design in the live app.
 {
   "mcpServers": {
     "street-generator": {
-      "command": "npx",
-      "args": ["-y", "street-generator-mcp"]
+      "command": "node",
+      "args": ["/absolute/path/to/street-generator-mcp/dist/index.js"]
     }
   }
 }
 ```
 
-Then ask Claude to design a street and it will call the tools automatically.
+Then ask Claude to design or import a street and it calls the tools automatically.
 
 ## Develop
 
 ```bash
 npm install
-npm test          # unit + fidelity tests
+npm test          # unit, mocked-network, and fidelity tests
 npm run build     # compile to dist/ and copy figure assets
 npm run dev       # run the server from source
 ```
 
 ## How the rendering stays faithful to the app
 
-The layout math and figure/element data are ported value-for-value from the Street Generator
-app. Fidelity is verified with structural tests (`test/fidelity.test.ts`) against a reference
-config; drop an SVG exported from the app into `test/golden/residential.svg` to enable the
-full cross-app check.
+The layout math, element data, figure art, and the OSM interpreter/mapper are ported
+value-for-value from the Street Generator app (the interpreter and mapper come with their
+original unit tests). Fidelity is checked with structural tests in `test/`.
 
 ## Future work
-- `validate_street` tool (Berlin RASt rules — the engine already exists in the app).
-- PNG output (SVG→raster).
+- PNG output from the server (SVG to raster).
+- `validate_street` against Berlin RASt rules (the engine already exists in the app).
+- Nearest-way selection for OSM import (v1 takes the first street within a radius of the
+  geocoded point).
 - Figures for cycle and bus lanes once art exists.
-- A shared rendering package so app/MCP fidelity is automatic rather than copied.
