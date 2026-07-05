@@ -56,6 +56,18 @@ describe("renderStreetSvg", () => {
     expect(renderStreetSvg(withFig, { showFigures: false })).not.toContain("<image");
   });
 
+  it("widens slim buildings to a sensible minimum width", () => {
+    const s: StreetConfig = {
+      id: "s",
+      name: "t",
+      elements: [
+        { id: "b", type: "BUILDING_LEFT", side: "LEFT", width_m: 4, building: { floors: [{ use: "Wohnen", height_m: 3 }] } },
+      ],
+    };
+    // width_m 4 should be bumped to the 10 m minimum, shown in the measurement
+    expect(renderStreetSvg(s)).toContain("10.00");
+  });
+
   it("renders a building as a floor stack", () => {
     const withBldg: StreetConfig = {
       id: "s",

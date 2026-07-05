@@ -22,8 +22,24 @@ function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-export function renderStreetSvg(street: StreetConfig, style: RenderStyle = {}): string {
+// Buildings drawn at their raw frontage width look too slim next to their
+// stacked floors, so give them a generous minimum width in the cross-section.
+const MIN_BUILDING_WIDTH_M = 10;
+
+function widenBuildings(street: StreetConfig): StreetConfig {
+  return {
+    ...street,
+    elements: street.elements.map((e) =>
+      e.type === "BUILDING_LEFT" || e.type === "BUILDING_RIGHT"
+        ? { ...e, width_m: Math.max(e.width_m, MIN_BUILDING_WIDTH_M) }
+        : e,
+    ),
+  };
+}
+
+export function renderStreetSvg(streetInput: StreetConfig, style: RenderStyle = {}): string {
   const s = { ...DEFAULTS, ...style };
+  const street = widenBuildings(streetInput);
   const layout = computeLayout(street);
   const W = layout.totalWidthPx;
   const roadOffsetPx = ROAD_OFFSET_M * layout.scale;
