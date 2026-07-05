@@ -1,0 +1,20 @@
+{
+  "id": "s",
+  "name": "Calm residential street",
+  "elements": [
+    { "id": "1", "type": "BUILDING_LEFT", "side": "LEFT", "width_m": 6, "building": { "floors": [{ "use": "Wohnen", "height_m": 3 }, { "use": "Wohnen", "height_m": 3 }, { "use": "Gewerbe", "height_m": 3 }] } },
+    { "id": "2", "type": "SIDEWALK", "side": "LEFT", "width_m": 3, "figure": { "show": true, "variant": "pedestrian-front" } },
+    { "id": "3", "type": "PLANTING_STRIP", "side": "LEFT", "width_m": 1.5, "figure": { "show": true, "variant": "tree-detailed", "height_m": 6 } },
+    { "id": "4", "type": "CYCLE_LANE", "side": "LEFT", "width_m": 2 },
+    { "id": "5", "type": "BUFFER", "side": "LEFT", "width_m": 0.75 },
+    { "id": "6", "type": "PARKING_LANE", "side": "LEFT", "width_m": 2, "figure": { "show": true, "variant": "car-parallel" } },
+    { "id": "7", "type": "TRAFFIC_LANE", "side": "CENTER", "width_m": 3, "figure": { "show": true, "variant": "car-front" } },
+    { "id": "8", "type": "TRAFFIC_LANE", "side": "CENTER", "width_m": 3, "figure": { "show": true, "variant": "car-back" } },
+    { "id": "9", "type": "PARKING_LANE", "side": "RIGHT", "width_m": 2 },
+    { "id": "10", "type": "BUFFER", "side": "RIGHT", "width_m": 0.75 },
+    { "id": "11", "type": "CYCLE_LANE", "side": "RIGHT", "width_m": 2 },
+    { "id": "12", "type": "PLANTING_STRIP", "side": "RIGHT", "width_m": 1.5, "figure": { "show": true, "variant": "tree-detailed", "height_m": 6 } },
+    { "id": "13", "type": "SIDEWALK", "side": "RIGHT", "width_m": 3, "figure": { "show": true, "variant": "pedestrian-back" } },
+    { "id": "14", "type": "BUILDING_RIGHT", "side": "RIGHT", "width_m": 6, "building": { "floors": [{ "use": "Wohnen", "height_m": 3 }, { "use": "Wohnen", "height_m": 3 }] } }
+  ]
+}
