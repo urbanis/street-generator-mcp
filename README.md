@@ -5,7 +5,7 @@ An [MCP](https://modelcontextprotocol.io) server that lets Claude design and ren
 [Street Generator](https://streetgenerator.com) app, figures and all. It can also read a
 **real street from an address** via OpenStreetMap.
 
-![Example street cross-section](examples/residential-street.svg)
+![Example street cross-section](examples/residential-street.png)
 
 ## The idea
 
